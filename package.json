@@ -8,7 +8,11 @@
   ],
   "scripts": {
     "build:harness": "node scripts/build-harness.mjs",
-    "harness:check": "node scripts/build-harness.mjs --check"
+    "harness:check": "node scripts/build-harness.mjs --check",
+    "dev:api": "npm run dev --workspace @workshop/api",
+    "dev:web": "npm run dev --workspace @workshop/web",
+    "test": "npm test --workspace @workshop/api && npm test --workspace @workshop/web",
+    "e2e:install": "npx playwright-cli install-browser chromium"
   },
   "engines": {
     "node": ">=22"
