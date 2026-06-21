@@ -85,3 +85,42 @@ export interface OrderView {
   createdAt: string;
   items: OrderItemView[];
 }
+
+export interface AdminDashboardTotals {
+  revenue: number;
+  orderCount: number;
+  paidOrFulfilledCount: number;
+}
+
+export interface RevenueByWeekPoint {
+  weekStart: string;
+  revenue: number;
+  orders: number;
+}
+
+export interface TopProduct {
+  productId: number;
+  title: string;
+  units: number;
+  revenue: number;
+}
+
+export interface OrdersByStatusPoint {
+  status: string;
+  count: number;
+}
+
+export interface LowStockItem {
+  id: number;
+  title: string;
+  stock: number;
+  lowStockThreshold: number;
+}
+
+export interface AdminDashboard {
+  totals: AdminDashboardTotals;
+  revenueByWeek: RevenueByWeekPoint[];
+  topProducts: TopProduct[];
+  ordersByStatus: OrdersByStatusPoint[];
+  lowStock: LowStockItem[];
+}

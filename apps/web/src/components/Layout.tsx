@@ -18,6 +18,14 @@ export default function Layout() {
             Workshop Store
           </Link>
           <div className="flex items-center gap-4">
+            {user?.isAdmin && (
+              <Link
+                to="/admin"
+                className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+              >
+                Admin
+              </Link>
+            )}
             <Link
               to="/orders"
               className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"

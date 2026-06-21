@@ -1,4 +1,5 @@
 import type {
+  AdminDashboard,
   CartView,
   LoginResponse,
   OrderView,
@@ -136,3 +137,6 @@ export const createOrder = () => request<OrderView>('/orders', { method: 'POST' 
 export const getOrders = () => request<OrderView[]>('/orders');
 
 export const getOrder = (id: number) => request<OrderView>(`/orders/${id}`);
+
+// --- admin ---
+export const getAdminDashboard = () => request<AdminDashboard>('/admin/dashboard');

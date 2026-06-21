@@ -19,6 +19,7 @@ export class Order {
   @Column({ type: 'int' })
   userId!: number;
 
+  @Index()
   @Column({ type: 'varchar', default: 'paid' })
   status!: OrderStatus;
 
@@ -28,6 +29,7 @@ export class Order {
   @Column({ type: 'real' })
   total!: number;
 
+  @Index()
   @CreateDateColumn()
   createdAt!: Date;
 

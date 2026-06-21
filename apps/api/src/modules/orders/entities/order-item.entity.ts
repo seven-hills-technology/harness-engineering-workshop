@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -20,6 +21,7 @@ export class OrderItem {
   @JoinColumn({ name: 'orderId' })
   order!: Order;
 
+  @Index()
   @Column({ type: 'int' })
   productId!: number;
 

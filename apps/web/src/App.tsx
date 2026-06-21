@@ -9,6 +9,8 @@ import ProductDetailPage from './products/ProductDetailPage';
 import CheckoutPage from './checkout/CheckoutPage';
 import OrdersPage from './orders/OrdersPage';
 import OrderDetailPage from './orders/OrderDetailPage';
+import AdminRoute from './components/AdminRoute';
+import AdminDashboardPage from './admin/AdminDashboardPage';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },
@@ -33,6 +35,14 @@ export default function App() {
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/orders" element={<OrdersPage />} />
               <Route path="/orders/:id" element={<OrderDetailPage />} />
+              <Route
+                path="/admin"
+                element={
+                  <AdminRoute>
+                    <AdminDashboardPage />
+                  </AdminRoute>
+                }
+              />
             </Route>
           </Routes>
         </BrowserRouter>
