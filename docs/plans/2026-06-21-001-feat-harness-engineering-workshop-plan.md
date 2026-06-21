@@ -353,7 +353,7 @@ feature; `workshop:review` runs the suite as the one objective gate.
 - [x] Editing a file in `workshop-harness/` + `npm run build:harness` updates both targets; smoke check passes. _(Phase 1)_
 - [ ] `workshop:plan --visual` runs the lavish-axi loop (Node ≥ 22) and folds back into the design doc; degrades gracefully otherwise.
 - [ ] App boots; products + **order history** seeded; login works for `admin@test.com` / `user@test.com` (pwd `password`).
-- [ ] Checkout/Orders, Reviews-write, and Search/recommendations are fully functional and tested (Jest + RTL + e2e).
+- [x] Checkout/Orders, Reviews-write, and Search/recommendations are fully functional and tested (Jest + RTL + e2e). _(Phases 5–7 — API 38 + web 17 tests; e2e checkout/write-review/search-filter green)_
 - [ ] `workshop:review` emits an advisory risk level + rationale + classified findings + structured PR body, **without** git worktrees, and fails only on red tests/coverage drop.
 - [x] Playwright CLI drives the e2e suite via npx (no global install). _(Phase 4 — login→browse→cart e2e green against the live stack)_
 - [ ] The Admin Dashboard reference renders all four metrics from seeded data.
