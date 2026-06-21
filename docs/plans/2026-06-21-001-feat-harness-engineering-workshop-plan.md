@@ -349,7 +349,7 @@ feature; `workshop:review` runs the suite as the one objective gate.
 
 ## Acceptance Criteria
 
-- [ ] `workshop:plan|work|review|storm|setup` are invocable and functional in **both** Codex and Claude.
+- [x] `workshop:plan|work|review|storm|setup` are invocable and functional in **both** Codex and Claude. _(Phase 2 — generated to both targets; runtime dry-run in each tool is part of Phase 11)_
 - [x] Editing a file in `workshop-harness/` + `npm run build:harness` updates both targets; smoke check passes. _(Phase 1)_
 - [ ] `workshop:plan --visual` runs the lavish-axi loop (Node ≥ 22) and folds back into the design doc; degrades gracefully otherwise.
 - [ ] App boots; products + **order history** seeded; login works for `admin@test.com` / `user@test.com` (pwd `password`).

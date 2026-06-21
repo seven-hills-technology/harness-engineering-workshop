@@ -259,10 +259,13 @@ function smokeCheck() {
   ]) {
     try { JSON.parse(readFileSync(f, 'utf8')); } catch (e) { problems.push(`invalid JSON: ${rel(f)} (${e.message})`); }
   }
-  // Each skill exists in BOTH tool locations.
+  // Each skill exists in BOTH tool locations, starts with frontmatter, and is namespaced.
   for (const s of generated.skills) {
     if (!existsSync(join(claudePluginDir, 'skills', s.dir, 'SKILL.md'))) problems.push(`missing Claude skill: ${s.dir}`);
     if (!existsSync(join(codexSkillsDir, s.dir, 'SKILL.md'))) problems.push(`missing Codex skill: ${s.dir}`);
+    const raw = readFileSync(join(SRC, 'skills', s.dir, 'SKILL.md'), 'utf8');
+    if (!raw.startsWith('---')) problems.push(`skill "${s.dir}": SKILL.md must start with YAML frontmatter (no content above the opening ---)`);
+    if (!s.name.startsWith(`${ns}:`)) problems.push(`skill "${s.dir}": frontmatter name "${s.name}" should be namespaced "${ns}:${s.dir}"`);
   }
   // Each Codex agent TOML has the required keys.
   for (const a of generated.agents) {
