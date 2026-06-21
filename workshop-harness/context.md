@@ -22,8 +22,9 @@ npm run build:harness
 | `workshop-harness/agents/<cat>/<name>.md` | `plugins/workshop/agents/` + `.codex/agents/*.toml` |
 | `workshop-harness/mcp.json` | `plugins/workshop/.mcp.json` + `.codex/config.toml` |
 
-The harness skills are namespaced `workshop:` — `workshop:plan`, `workshop:work`,
-`workshop:review`, `workshop:storm`, `workshop:setup`.
+The harness skills are namespaced `workshop:` — `workshop:storm`, `workshop:plan`, `workshop:work`,
+`workshop:review`, `workshop:ship`, `workshop:setup`. The core loop is **plan → work → review →
+ship** (`work` implements and commits; `ship` opens a risk-assessed PR).
 
 ## Project layout
 

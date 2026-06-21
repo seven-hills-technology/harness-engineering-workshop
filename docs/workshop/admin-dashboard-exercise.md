@@ -28,8 +28,9 @@ verified with a Playwright CLI e2e.
 3. **Module 2 / `workshop:work`** — implement: an admin aggregation endpoint (`node-worker`) then
    the dashboard page with charts (`react-worker`). Tests come with each.
 4. **Module 3** — add a Playwright CLI e2e (`e2e/admin-dashboard.sh` is the reference) and run it.
-5. **Module 4 / `workshop:review`** — run the quality gate; read the risk level + PR body; resolve
-   any `ask-user` findings; make sure tests pass.
+5. **Module 4 / `workshop:review`** — run the quality gate; resolve any `ask-user` findings; make
+   sure tests pass.
+6. **`workshop:ship`** — assess risk + suggested review depth, draft the structured PR, and open it.
 
 ## Stretch goals
 
@@ -41,4 +42,5 @@ verified with a Playwright CLI e2e.
 ## Done when
 
 - `/admin` renders all five sections from seeded data, admin-only.
-- Jest + Vitest green; an e2e flow passes; `workshop:review` produces a clean structured PR body.
+- Jest + Vitest green; an e2e flow passes; `workshop:ship` opens a PR with a risk assessment and
+  suggested review depth.

@@ -9,7 +9,7 @@ The model is only half the system. The other half is the **harness** you build a
 
 - **Context** — what the agent always knows (`CLAUDE.md` / `AGENTS.md`, project conventions).
 - **Agents** — specialized sub-agents (workers, reviewers, researchers) you dispatch.
-- **Skills / commands** — repeatable workflows (`workshop:plan → work → review`).
+- **Skills / commands** — repeatable workflows (`workshop:plan → work → review → ship`).
 - **Tools** — MCP servers and CLIs (here, the Playwright CLI) the agent can drive.
 - **Quality gates** — how changes get classified, risk-rated, tested, and shaped into PRs.
 - **Design loop** — getting human feedback on UI before building it.

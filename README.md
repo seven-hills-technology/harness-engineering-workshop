@@ -107,7 +107,8 @@ npm run harness:check     # fails if generated output is out of date (drift chec
 ## 3. Build a feature with the workflow
 
 With the app running and your agent set up, work the loop: **`workshop:plan` → `workshop:work`
-→ `workshop:review`**. Start with the module guides in [`docs/workshop/`](docs/workshop/00-overview.md)
+→ `workshop:review` → `workshop:ship`** (`work` implements and commits; `ship` opens a
+risk-assessed PR). Start with the module guides in [`docs/workshop/`](docs/workshop/00-overview.md)
 and pick something to build (e.g. the [Admin Dashboard exercise](docs/workshop/admin-dashboard-exercise.md)).
 Re-run `npm run start:api` to pick up API changes (`npm run dev:api` gives watch mode).
 

@@ -52,44 +52,20 @@ changed). **A red suite or a coverage drop fails the run** — this is the only 
 tests fail, stop and fix (or escalate) before producing the PR. Record a one-line
 `testing_summary` (what ran, pass/fail, any coverage delta).
 
-## Step 4 — Emit a structured PR body
+## Step 4 — Hand off to `workshop:ship`
 
-Assemble the PR body **deterministically** around a single LLM-written summary, so every PR has
-the same shape:
-
-```markdown
-## What Changed
-<one short LLM-written paragraph summarizing the change>
-
-## Intent
-<verbatim, lightly-cleaned restatement of the user's goal / plan reference>
-
-## Risk Assessment
-**<LOW|MEDIUM|HIGH>** — <risk_rationale>. Suggested review: <action from the table>.
-
-## Testing
-<testing_summary> — e.g. "api 44/44, web 20/20, e2e checkout green".
-
-## Findings
-- ✅ auto-fixed (N): <one line each>
-- ⚠️ needs human judgment (M): <one line each, with file:line and the decision taken>
-- ℹ️ notes (K): <one line each>
-
-## Review checklist
-- [ ] Intent matches the change
-- [ ] Risk level looks right (or adjust)
-- [ ] Tests cover the new behavior
-- [ ] No `ask-user` finding left unresolved
-```
-
-Only `## What Changed` is model-generated; everything else is assembled from the gate's own data,
-so the body can't drift from what actually happened.
+The gate produces exactly the inputs a PR needs — the advisory `risk_level` + `risk_rationale`,
+the classified findings, and the `testing_summary`. It does **not** open the PR itself. Pass these
+to **`workshop:ship`**, which drafts the structured, risk-aware PR description (What changed / Risk
+assessment + suggested review depth / Testing / Findings / Review checklist) and creates the PR.
+See the ship skill's [pr.md](../../ship/references/pr.md). Reusing the gate's risk level + findings
+keeps the PR and the review in agreement.
 
 ## Output contract
 
 Return: the applied auto-fixes, the batched `ask-user` escalation (if any), the advisory
-`risk_level` + `risk_rationale`, the `testing_summary`, and the assembled PR body. **Block only
-on failing tests.** Risk-based human review is always advisory.
+`risk_level` + `risk_rationale`, and the `testing_summary` — ready for `workshop:ship` to assemble
+into the PR. **Block only on failing tests.** Risk-based human review is always advisory.
 
 ## Optional: worktree isolation (advanced demo)
 

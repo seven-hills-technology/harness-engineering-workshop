@@ -204,7 +204,7 @@ If found, continue to Phase 1.
 
    **Handling merge conflicts:** If conflicts arise during rebasing or merging, resolve them immediately. Incremental commits make conflict resolution easier since each commit is small and focused.
 
-   **Note:** Incremental commits use clean conventional messages without attribution footers. The final Phase 4 commit/PR includes the full attribution.
+   **Note:** Incremental commits use clean conventional messages without attribution footers. The final commit includes the full attribution.
 
 3. **Follow Existing Patterns**
 
@@ -228,7 +228,7 @@ If found, continue to Phase 1.
    For UI work:
 
    - Implement components following design specs
-   - Run the app and verify rendered output with the Playwright CLI (see [commit-and-pr.md](./references/commit-and-pr.md))
+   - Run the app and verify rendered output with the Playwright CLI (the `workshop:playwright-cli` skill)
    - Fix visual differences identified
    - Repeat until the implementation looks correct
 
@@ -278,15 +278,19 @@ If found, continue to Phase 1.
      - Validation window and owner
    - If there is truly no production/runtime impact, still include the section with: `No additional operational monitoring required` and a one-line reason.
 
-### Phase 4: Ship It
+### Phase 4: Commit
 
-Follow the commit, screenshot, and PR workflow in [commit-and-pr.md](./references/commit-and-pr.md).
+Commit the finished work using [commit.md](./references/commit.md). This skill stops at the
+commit — opening the PR is a separate step.
 
-1. **Create commit** using the conventional format from the reference
-2. **Capture screenshots** for UI changes (REQUIRED — see reference for Playwright CLI commands)
-3. **Create PR** using the template from the reference
-4. **Update plan status** — change frontmatter `status: active` → `status: completed`
-5. **Notify user** — summarize what was completed, link to PR, note follow-up work
+1. **Create the commit(s)** using the conventional format from the reference (incremental commits
+   as you go; a final commit for the last unit).
+2. **Update plan status** — check off completed items; when the plan is done, set frontmatter
+   `status:` → `completed`.
+3. **Hand off to `workshop:ship`** — it assesses risk, drafts the structured PR description with a
+   suggested review depth, runs the tests, and opens the PR. (Run `workshop:review` first if you
+   want a multi-agent review + quality gate before shipping.)
+4. **Notify user** — summarize what was built and what's committed, and suggest `workshop:ship`.
 
 ---
 

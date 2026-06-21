@@ -6,8 +6,11 @@
 
 - **`workshop:storm`** — explore *what* to build (brainstorm → `docs/brainstorms/`).
 - **`workshop:plan`** — turn an idea into a plan (`docs/plans/`), with a design gate.
-- **`workshop:work`** — execute a plan: dispatches **worker agents** by stack, writes tests, commits.
-- **`workshop:review`** — multi-agent review + the quality gate (Module 4).
+- **`workshop:work`** — execute a plan: dispatches **worker agents** by stack, writes tests, **commits** (stops at the commit).
+- **`workshop:review`** — multi-agent review + the quality gate (Module 4): classifies findings, assigns advisory risk, runs tests.
+- **`workshop:ship`** — opens the PR: assesses **risk + suggested review depth**, runs tests, and drafts a structured PR description.
+
+The loop is **plan → work → review → ship**.
 
 ## The agent roster
 

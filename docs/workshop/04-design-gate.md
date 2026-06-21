@@ -34,8 +34,9 @@ worktree required**:
 2. **Advisory risk:** `LOW` / `MEDIUM` / `HIGH` with a rationale + suggested human action — it
    explains and recommends, **never blocks**.
 3. **Tests are the one hard gate:** a red suite or coverage drop fails the run.
-4. **Structured PR body + checklist:** deterministic sections around a single LLM summary, so
-   every PR looks the same.
+4. **Hands off to `workshop:ship`:** the gate's risk level + findings + test summary feed
+   `workshop:ship`, which drafts the structured, risk-aware PR (with a suggested review depth) and
+   opens it — so the PR and the review always agree.
 
 (Optional advanced demo: run the gate inside a throwaway `git-worktree` so auto-fixes don't touch
 your live tree.)
@@ -44,8 +45,8 @@ your live tree.)
 
 1. Use `--visual` to mock up a dashboard tweak; annotate it; let the agent fold feedback in.
 2. After implementing, run **`workshop:review`** and read the gate output: the risk level +
-   rationale, the classified findings, and the generated PR body. Break a test on purpose and
-   watch the gate fail the run.
+   rationale, the classified findings, and the test result. Break a test on purpose and watch the
+   gate fail the run. Then run **`workshop:ship`** to open the risk-assessed PR.
 
 ## Takeaway
 
