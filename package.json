@@ -1,0 +1,24 @@
+{
+  "name": "ai-workshop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Harness Engineering Workshop — an agent-agnostic (Codex + Claude), self-contained workshop for engineering an AI coding harness.",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "build:harness": "node scripts/build-harness.mjs",
+    "harness:check": "node scripts/build-harness.mjs --check",
+    "dev:api": "npm run dev --workspace @workshop/api",
+    "dev:web": "npm run dev --workspace @workshop/web",
+    "test": "npm test --workspace @workshop/api && npm test --workspace @workshop/web",
+    "e2e:install": "npx playwright-cli install-browser chromium"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@playwright/cli": "latest"
+  },
+  "license": "MIT"
+}

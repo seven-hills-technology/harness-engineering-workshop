@@ -1,0 +1,26 @@
+# dependencies
+node_modules/
+
+# runtime data (re-seeded from DummyJSON on boot — safe to delete)
+apps/api/db/
+# the sqlite path is CWD-relative, so a db/ may also appear at repo root
+/db/
+
+# build output
+dist/
+build/
+
+# tool state
+.lavish-axi/
+.playwright/
+.playwright-cli/
+playwright-report/
+test-results/
+
+# logs / os
+*.log
+.DS_Store
+
+# NOTE: generated harness artifacts (CLAUDE.md, AGENTS.md, plugins/workshop/,
+# .agents/, .codex/, .claude-plugin/) are intentionally committed so the
+# workshop works on a clean clone. Regenerate them with `npm run build:harness`.
