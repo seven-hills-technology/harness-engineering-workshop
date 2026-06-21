@@ -5,65 +5,65 @@ agents, skills/commands, tooling, quality gates, and design loop that make an AI
 productive on a real codebase. The harness is **agent-agnostic**: it runs the same in **Codex**
 and **Claude Code**, generated from a single source.
 
-The teaching vehicle is a larger e-commerce app (React + NestJS + SQLite) with a working
-storefront, cart, checkout/orders, reviews, and search. The feature you build *during* the
-workshop is the **Admin Dashboard**.
-
 > **The big idea:** your harness is just files. Author them once in `workshop-harness/`, run one
 > build step, and the same capabilities show up in whatever agent you use.
 
 ---
 
-## Prerequisites
+## 1. Get the app running — start here
 
-- **Node ≥ 22** (the visual design loop, lavish-axi, requires it). The repo pins a version in
-  `.nvmrc`, so `nvm use` selects a known-good Node. On **Apple Silicon, prefer an arm64 Node**
-  (`nvm use` / `nvm use 22`) to run natively. The start scripts reconcile native binaries
-  (`better-sqlite3`, `esbuild`) for whatever Node you launch with, so a mismatched arch self-heals
-  on first run.
-- **git**, and optionally the **GitHub CLI** (`gh`) for PR reviews.
-- A coding agent: **Codex CLI** or **Claude Code**.
+**Do this first** and confirm the store loads in your browser before touching the harness.
+Works the same on **Windows, macOS, and Linux**.
 
-> **Works on Windows, macOS, and Linux.** The cross-platform commands below (`npm run start:*`)
-> are the same everywhere; there are also `./start-*.sh` (macOS/Linux) and `start-*.cmd` (Windows)
-> shortcuts.
+**You need:** **Node ≥ 22**, **git**, and a coding agent (**Codex CLI** or **Claude Code**).
 
-## Quick start
+Run these in the repo root, in order:
 
 ```bash
-npm install                 # installs all workspaces (api + web)
+# 0. Use one consistent Node >= 22 (on Apple Silicon, an arm64 Node).
+nvm use            # selects the pinned version from .nvmrc (22); then:
+node -v            # confirm it prints v22 or newer
 
-# run the app — two terminals. Cross-platform (Windows / macOS / Linux):
-npm run start:api           # NestJS API on http://localhost:8010  (seeds on first boot)
-npm run start:web           # React app on  http://localhost:9010
+# 1. Install all dependencies (api + web workspaces).
+npm install
 
-# tests
-npm test                    # api (Jest) + web (Vitest)
+# 2. Install the Playwright browser (used for UI testing and the design loop).
+npm run e2e:install
+
+# 3. Start the app — TWO terminals (leave both running):
+npm run start:api  # API → http://localhost:8010   (seeds data on first boot)
+npm run start:web  # UI  → http://localhost:9010
+
+# 4. Verify everything is wired up:
+npm test           # api (Jest) + web (Vitest) — expect all green
 ```
 
-**Shortcuts** (optional): macOS/Linux `./start-api.sh` · `./start-web.sh` — Windows
-`start-api.cmd` · `start-web.cmd` (or double-click them). All call the same Node launcher
-(`scripts/start.mjs`), which checks Node, installs deps, and fixes the `better-sqlite3` native
-build if needed.
+Then open **http://localhost:9010** and sign in (password is `password` for both):
 
-**End-to-end** (Playwright CLI; the flow scripts are bash — on Windows use Git Bash or WSL):
+| email | password | role |
+| --- | --- | --- |
+| `admin@test.com` | `password` | admin (also sees the Admin Dashboard) |
+| `user@test.com` | `password` | customer |
 
-```bash
-npm run e2e:install         # once: install a browser (cross-platform)
-bash e2e/login-browse-cart.sh   # and checkout.sh / write-review.sh / search-filter.sh / admin-dashboard.sh
-```
+If you can browse products, add to cart, and reach checkout — you're ready. ✅
 
-First boot seeds **194 products** (from DummyJSON) and **120 synthetic orders** across 12 weeks.
-Deleting `apps/api/db/` (or a root `db/`) re-seeds. Test accounts (password `password`):
-
-| email | role |
-| --- | --- |
-| `admin@test.com` | admin (sees Admin Dashboard) |
-| `user@test.com` | customer |
+**Notes**
+- First boot seeds **194 products** (from DummyJSON) and **120 orders** across 12 weeks. Deleting
+  `apps/api/db/` re-seeds.
+- **Start shortcuts** (optional): macOS/Linux `./start-api.sh` · `./start-web.sh`; Windows
+  `start-api.cmd` · `start-web.cmd` (double-clickable). All call the same launcher
+  (`scripts/start.mjs`), which checks your Node and reconciles native binaries
+  (`better-sqlite3`, `esbuild`) for it — so a mismatched arch self-heals on first run.
+- **Apple Silicon:** prefer an **arm64** Node (`nvm use`) to run natively; an x64 Node works but
+  runs under Rosetta (the launcher will say so).
+- **Optional `gh`** (GitHub CLI) is only needed for PR-based reviews.
+- **End-to-end flows** (Playwright CLI) live in `e2e/` — e.g. `bash e2e/login-browse-cart.sh`
+  (also `checkout.sh`, `write-review.sh`, `search-filter.sh`, `admin-dashboard.sh`). On Windows
+  run them from Git Bash or WSL.
 
 ---
 
-## Set up the harness in your agent
+## 2. Set up the harness in your agent
 
 The harness is authored once in `workshop-harness/` and **generated** into each tool's native
 config (already committed, so it works on clone). Skills are namespaced `workshop:` —
@@ -104,16 +104,12 @@ npm run harness:check     # fails if generated output is out of date (drift chec
 
 ---
 
-## The workshop
+## 3. Build a feature with the workflow
 
-Four modules, building the **Admin Dashboard** as the running example. See [`docs/workshop/`](docs/workshop/):
-
-1. [Context & agent files](docs/workshop/01-context.md) — `CLAUDE.md` / `AGENTS.md`, `workshop.local.md`.
-2. [Agents & skills](docs/workshop/02-agents-skills.md) — the `plan → work → review` loop; author your own.
-3. [MCP & tools + the generator](docs/workshop/03-mcp-tools.md) — Playwright CLI, the single-source build.
-4. [Interactive design + quality gate](docs/workshop/04-design-gate.md) — lavish-axi mockups, the worktree-free review gate.
-
-Then: the [Admin Dashboard exercise](docs/workshop/admin-dashboard-exercise.md). Facilitators: see [facilitator-notes.md](docs/workshop/facilitator-notes.md).
+With the app running and your agent set up, work the loop: **`workshop:plan` → `workshop:work`
+→ `workshop:review`**. Start with the module guides in [`docs/workshop/`](docs/workshop/00-overview.md)
+and pick something to build (e.g. the [Admin Dashboard exercise](docs/workshop/admin-dashboard-exercise.md)).
+Re-run `npm run start:api` to pick up API changes (`npm run dev:api` gives watch mode).
 
 ---
 
