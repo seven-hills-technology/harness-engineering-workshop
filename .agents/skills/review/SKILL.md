@@ -4,8 +4,6 @@ description: Perform exhaustive code reviews using multi-agent analysis and ultr
 argument-hint: "[PR number, GitHub URL, branch name, or latest] [--serial]"
 ---
 
-<!-- NOTE: the worktree-free quality gate (finding classification auto-fix/ask-user, advisory LOW/MED/HIGH risk + rationale, structured PR body) is added to this skill in Phase 9 of the workshop plan. -->
-
 # Review Command
 
 <command_purpose> Perform exhaustive code reviews using multi-agent analysis and ultra-thinking for deep local inspection. </command_purpose>
@@ -148,6 +146,15 @@ Key steps:
 
 After presenting the summary, offer browser testing per [browser-testing.md](./references/browser-testing.md). Detect project type from PR files, offer appropriate testing, spawn a subagent if the user accepts.
 
+### 6. Quality Gate (worktree-free)
+
+Run the structured quality gate from [quality-gate.md](./references/quality-gate.md). It operates on the working-tree diff (`git diff HEAD`) with **no git worktree required**:
+
+1. **Classify** each finding as `no-op` / `auto-fix` / `ask-user`; apply the auto-fixes in place and batch the rest into a single human escalation (approve / fix / skip).
+2. **Assign an advisory risk level** — `LOW` / `MEDIUM` / `HIGH` with a one-line `risk_rationale` and a suggested human-review action. This **never blocks** — it explains and recommends.
+3. **Run the tests** — a red suite or coverage drop is the **one objective gate** that fails the run.
+4. **Emit a structured PR body + review checklist** (deterministic sections around a single LLM-written summary), so every PR has a consistent, reviewable shape.
+
 ### Important: P1 Findings Block Merge
 
-Any **P1 (CRITICAL)** findings must be addressed before merging the PR. Present these prominently and ensure they're resolved before accepting the PR.
+Any **P1 (CRITICAL)** findings must be addressed before merging the PR. Present these prominently and ensure they're resolved before accepting the PR. (Failing tests also block per the quality gate; risk-based review is advisory.)
