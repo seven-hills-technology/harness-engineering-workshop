@@ -6,13 +6,17 @@
   ```bash
   npm install
   npm run e2e:install        # downloads chromium for Playwright CLI
-  ./start-api.sh             # confirm it seeds (194 products + 120 orders), API on :8010
-  ./start-web.sh             # confirm http://localhost:9010 loads, login works
+  npm run start:api          # confirm it seeds (194 products + 120 orders), API on :8010
+  npm run start:web          # confirm http://localhost:9010 loads, login works
   npm test                   # api + web green
   ```
-- **Node ≥ 22**, single consistent architecture. `./start-api.sh` checks the Node version and
-  auto-rebuilds `better-sqlite3` for the running Node, which fixes the most common snag (mixed
-  arm64/x86_64 Node installs breaking the native module on Apple Silicon).
+  These commands are identical on **Windows, macOS, and Linux**. Shortcuts: `./start-api.sh`
+  (macOS/Linux) or `start-api.cmd` (Windows), etc.
+- **Node ≥ 22.** `npm run start:api` checks the Node version and auto-rebuilds `better-sqlite3`
+  for the running Node, which fixes the most common snag (mixed arm64/x86_64 Node installs
+  breaking the native module on Apple Silicon).
+- **Windows attendees:** the app + tests run via the `npm run start:*` / `npm test` commands. The
+  `e2e/*.sh` flows need **Git Bash** or **WSL** (Playwright CLI itself is cross-platform).
 - Each attendee picks their agent: **Codex** or **Claude Code**. Both are first-class.
   - Claude: `/plugin marketplace add .` then `/plugin install workshop`.
   - Codex: open the project and trust it; skills/agents/MCP load from `.agents/` + `.codex/`.

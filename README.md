@@ -16,27 +16,38 @@ workshop is the **Admin Dashboard**.
 
 ## Prerequisites
 
-- **Node ≥ 22** (the visual design loop, lavish-axi, requires it). Use a single, consistent Node
-  — on Apple Silicon make sure your shell's `node` is the **arm64** build (mixed arm64/x86_64
-  Node installs cause native-module errors with `better-sqlite3`).
+- **Node ≥ 22** (the visual design loop, lavish-axi, requires it). Use one consistent Node — the
+  start scripts auto-rebuild `better-sqlite3` for your Node, so mixed arm64/x86_64 installs are
+  handled for you.
 - **git**, and optionally the **GitHub CLI** (`gh`) for PR reviews.
 - A coding agent: **Codex CLI** or **Claude Code**.
+
+> **Works on Windows, macOS, and Linux.** The cross-platform commands below (`npm run start:*`)
+> are the same everywhere; there are also `./start-*.sh` (macOS/Linux) and `start-*.cmd` (Windows)
+> shortcuts.
 
 ## Quick start
 
 ```bash
 npm install                 # installs all workspaces (api + web)
 
-# run the app (two terminals) — these scripts handle Node checks, deps,
-# and the better-sqlite3 native build so it works the same on any machine
-./start-api.sh              # NestJS API on http://localhost:8010  (seeds on first boot)
-./start-web.sh              # React app on  http://localhost:9010
+# run the app — two terminals. Cross-platform (Windows / macOS / Linux):
+npm run start:api           # NestJS API on http://localhost:8010  (seeds on first boot)
+npm run start:web           # React app on  http://localhost:9010
 
 # tests
 npm test                    # api (Jest) + web (Vitest)
+```
 
-# end-to-end (Playwright CLI) — once: install a browser
-npm run e2e:install
+**Shortcuts** (optional): macOS/Linux `./start-api.sh` · `./start-web.sh` — Windows
+`start-api.cmd` · `start-web.cmd` (or double-click them). All call the same Node launcher
+(`scripts/start.mjs`), which checks Node, installs deps, and fixes the `better-sqlite3` native
+build if needed.
+
+**End-to-end** (Playwright CLI; the flow scripts are bash — on Windows use Git Bash or WSL):
+
+```bash
+npm run e2e:install         # once: install a browser (cross-platform)
 bash e2e/login-browse-cart.sh   # and checkout.sh / write-review.sh / search-filter.sh / admin-dashboard.sh
 ```
 

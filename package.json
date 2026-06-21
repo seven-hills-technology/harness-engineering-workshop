@@ -9,6 +9,8 @@
   "scripts": {
     "build:harness": "node scripts/build-harness.mjs",
     "harness:check": "node scripts/build-harness.mjs --check",
+    "start:api": "node scripts/start.mjs api",
+    "start:web": "node scripts/start.mjs web",
     "dev:api": "npm run dev --workspace @workshop/api",
     "dev:web": "npm run dev --workspace @workshop/web",
     "test": "npm test --workspace @workshop/api && npm test --workspace @workshop/web",

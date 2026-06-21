@@ -1,0 +1,9 @@
+# Normalize line endings so the app runs on Windows, macOS, and Linux.
+* text=auto eol=lf
+
+# Shell scripts must stay LF (run via bash / git-bash on Windows).
+*.sh text eol=lf
+
+# Windows batch files must be CRLF.
+*.cmd text eol=crlf
+*.bat text eol=crlf

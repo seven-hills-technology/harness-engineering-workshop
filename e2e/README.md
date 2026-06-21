@@ -6,10 +6,10 @@ readable shell scripts that drive `npx playwright-cli` with role/text locators.
 
 ## Prerequisites
 
-1. Start the API and web app (in separate terminals):
+1. Start the API and web app (in separate terminals, any OS):
    ```bash
-   ./start-api.sh   # http://localhost:8010
-   ./start-web.sh   # http://localhost:9010
+   npm run start:api   # http://localhost:8010
+   npm run start:web   # http://localhost:9010
    ```
 2. Install a browser once:
    ```bash
@@ -21,6 +21,9 @@ readable shell scripts that drive `npx playwright-cli` with role/text locators.
 ```bash
 bash e2e/login-browse-cart.sh
 ```
+
+> On **Windows**, run these flows from **Git Bash** or **WSL** (they're bash scripts). The
+> Playwright CLI itself is cross-platform; only the flow wrappers assume bash.
 
 ## Flows
 
