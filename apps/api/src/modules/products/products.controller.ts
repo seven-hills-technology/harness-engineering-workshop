@@ -7,19 +7,25 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { AdminGuard } from '../auth/guards/admin.guard';
+import { AuthenticatedUser } from '../auth/auth.types';
 import { ProductsService } from './products.service';
 import {
   BulkAdjustInput,
   BulkAdjustResult,
+  CreateReviewInput,
   InventoryUpdateInput,
   ProductDetail,
   ProductListQuery,
   ProductListResponse,
 } from './product.types';
 import { Product } from './entities/product.entity';
+
+type AuthedRequest = Request & { user: AuthenticatedUser };
 
 @Controller('products')
 export class ProductsController {
@@ -58,5 +64,14 @@ export class ProductsController {
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number): Promise<ProductDetail> {
     return this.products.findOne(id);
+  }
+
+  @Post(':id/reviews')
+  addReview(
+    @Req() req: AuthedRequest,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: CreateReviewInput,
+  ): Promise<ProductDetail> {
+    return this.products.addReview(id, req.user.id, req.user.email, body);
   }
 }

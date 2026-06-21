@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { useProduct } from './queries';
 import { useCartMutations } from '../cart/useCart';
+import ReviewForm from './ReviewForm';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -66,6 +67,8 @@ export default function ProductDetailPage() {
             </li>
           ))}
         </ul>
+
+        <ReviewForm productId={product.id} />
       </section>
     </div>
   );

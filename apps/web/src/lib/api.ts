@@ -82,6 +82,15 @@ export const getCategories = () => request<string[]>('/products/categories');
 
 export const getProduct = (id: number) => request<ProductDetail>(`/products/${id}`);
 
+export const createReview = (
+  productId: number,
+  input: { rating: number; comment: string },
+) =>
+  request<ProductDetail>(`/products/${productId}/reviews`, {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+
 // --- cart ---
 export const getCart = () => request<CartView>('/cart');
 

@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as api from '../lib/api';
 import type { ProductDetail, ProductListResponse } from '../lib/types';
 
@@ -18,5 +18,15 @@ export function useProduct(id: number) {
     queryKey: ['product', id],
     queryFn: () => api.getProduct(id),
     enabled: Number.isFinite(id),
+  });
+}
+
+export function useCreateReview(productId: number) {
+  const qc = useQueryClient();
+  return useMutation<ProductDetail, Error, { rating: number; comment: string }>({
+    mutationFn: (input) => api.createReview(productId, input),
+    onSuccess: (updated) => {
+      qc.setQueryData(['product', productId], updated);
+    },
   });
 }

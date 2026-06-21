@@ -30,6 +30,11 @@ export type InventoryUpdateInput = {
   lowStockThreshold?: number;
 };
 
+export type CreateReviewInput = {
+  rating: number;
+  comment: string;
+};
+
 export type BulkAdjustOperation = 'set' | 'add' | 'subtract';
 
 export type BulkAdjustInput = {

@@ -8,11 +8,13 @@ import { In, Repository } from 'typeorm';
 import { CartsService } from '../carts/carts.service';
 import { ReservedMap } from '../carts/cart.types';
 import { Product } from './entities/product.entity';
+import { Review } from './entities/review.entity';
 import {
   BulkAdjustInput,
   BulkAdjustFailure,
   BulkAdjustResult,
   BulkAdjustSuccess,
+  CreateReviewInput,
   InventoryUpdateInput,
   ProductDetail,
   ProductListItem,
@@ -25,6 +27,8 @@ export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepo: Repository<Product>,
+    @InjectRepository(Review)
+    private readonly reviewRepo: Repository<Review>,
     private readonly cartsService: CartsService,
   ) {}
 
@@ -78,6 +82,65 @@ export class ProductsService {
 
     const reserved = await this.cartsService.getReservedQuantities([id]);
     return this.withAvailability(product, reserved);
+  }
+
+  async addReview(
+    productId: number,
+    userId: number,
+    userEmail: string,
+    input: CreateReviewInput,
+  ): Promise<ProductDetail> {
+    const product = await this.productRepo.findOne({
+      where: { id: productId },
+    });
+
+    if (!product) {
+      throw new NotFoundException(`Product #${productId} not found`);
+    }
+
+    if (!input || typeof input !== 'object') {
+      throw new BadRequestException('Invalid request body');
+    }
+
+    const { rating, comment } = input;
+
+    if (
+      typeof rating !== 'number' ||
+      !Number.isInteger(rating) ||
+      rating < 1 ||
+      rating > 5
+    ) {
+      throw new BadRequestException('rating must be an integer between 1 and 5');
+    }
+
+    if (typeof comment !== 'string' || comment.trim().length === 0) {
+      throw new BadRequestException('comment must be a non-empty string');
+    }
+
+    const review = this.reviewRepo.create({
+      rating,
+      comment: comment.trim(),
+      reviewerName: userEmail,
+      reviewerEmail: userEmail,
+      date: new Date().toISOString(),
+      product,
+      userId,
+    });
+    await this.reviewRepo.save(review);
+
+    // Recompute the average in SQL (read-consistent, constant memory; avoids
+    // cascading the stale reviews collection on the loaded product).
+    const { avg } = (await this.reviewRepo
+      .createQueryBuilder('review')
+      .select('AVG(review.rating)', 'avg')
+      .where('review.productId = :productId', { productId })
+      .getRawOne<{ avg: number | string | null }>()) ?? { avg: 0 };
+    const average = avg === null ? 0 : Number(avg);
+    await this.productRepo.update(productId, {
+      rating: Math.round(average * 100) / 100,
+    });
+
+    return this.findOne(productId);
   }
 
   async getCategories(): Promise<string[]> {
