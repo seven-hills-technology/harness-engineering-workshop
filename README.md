@@ -27,9 +27,10 @@ workshop is the **Admin Dashboard**.
 ```bash
 npm install                 # installs all workspaces (api + web)
 
-# run the app (two terminals, or background them)
-npm run dev:api             # NestJS API on http://localhost:8010  (seeds on first boot)
-npm run dev:web             # React app on  http://localhost:9010
+# run the app (two terminals) — these scripts handle Node checks, deps,
+# and the better-sqlite3 native build so it works the same on any machine
+./start-api.sh              # NestJS API on http://localhost:8010  (seeds on first boot)
+./start-web.sh              # React app on  http://localhost:9010
 
 # tests
 npm test                    # api (Jest) + web (Vitest)

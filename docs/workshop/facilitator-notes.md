@@ -6,13 +6,13 @@
   ```bash
   npm install
   npm run e2e:install        # downloads chromium for Playwright CLI
-  npm run dev:api            # confirm it seeds (194 products + 120 orders)
-  npm run dev:web            # confirm http://localhost:9010 loads, login works
+  ./start-api.sh             # confirm it seeds (194 products + 120 orders), API on :8010
+  ./start-web.sh             # confirm http://localhost:9010 loads, login works
   npm test                   # api + web green
   ```
-- **Node ≥ 22**, single consistent architecture. On Apple Silicon, mixed arm64/x86_64 Node
-  installs break `better-sqlite3` (native module) — have attendees confirm `node -p process.arch`
-  matches their machine. This is the most common setup snag.
+- **Node ≥ 22**, single consistent architecture. `./start-api.sh` checks the Node version and
+  auto-rebuilds `better-sqlite3` for the running Node, which fixes the most common snag (mixed
+  arm64/x86_64 Node installs breaking the native module on Apple Silicon).
 - Each attendee picks their agent: **Codex** or **Claude Code**. Both are first-class.
   - Claude: `/plugin marketplace add .` then `/plugin install workshop`.
   - Codex: open the project and trust it; skills/agents/MCP load from `.agents/` + `.codex/`.
@@ -39,7 +39,8 @@
 
 ## Common issues
 
-- **`better-sqlite3` architecture error** → wrong-arch Node; use a single arm64 (or x86_64) Node.
+- **`better-sqlite3` architecture error** → `./start-api.sh` auto-rebuilds it for the running
+  Node; if it persists, ensure a single consistent Node ≥ 22 and re-run the script.
 - **Codex doesn't see skills** → check the Codex version vs
   `workshop-harness/harness.config.json` `targets.codex.minVersion`; skills live in `.agents/skills`.
 - **lavish-axi won't start** → needs Node ≥ 22 and network on first `npx`; it degrades to a

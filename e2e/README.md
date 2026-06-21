@@ -6,10 +6,10 @@ readable shell scripts that drive `npx playwright-cli` with role/text locators.
 
 ## Prerequisites
 
-1. Start the API and web app (in separate terminals, or `npm run dev` once added):
+1. Start the API and web app (in separate terminals):
    ```bash
-   npm run dev --workspace @workshop/api   # http://localhost:8010
-   npm run dev --workspace @workshop/web   # http://localhost:9010
+   ./start-api.sh   # http://localhost:8010
+   ./start-web.sh   # http://localhost:9010
    ```
 2. Install a browser once:
    ```bash
