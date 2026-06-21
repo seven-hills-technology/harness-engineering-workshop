@@ -1,0 +1,10 @@
+{
+  "name": "workshop",
+  "version": "0.1.0",
+  "description": "Workshop harness — agnostic AI coding tooling (plan/work/review/storm/setup), generated for Claude Code and Codex.",
+  "author": {
+    "name": "Seven Hills Technology",
+    "url": "https://github.com/seven-hills-technology"
+  },
+  "license": "MIT"
+}

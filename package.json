@@ -1,0 +1,17 @@
+{
+  "name": "ai-workshop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Harness Engineering Workshop — an agent-agnostic (Codex + Claude), self-contained workshop for engineering an AI coding harness.",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "build:harness": "node scripts/build-harness.mjs",
+    "harness:check": "node scripts/build-harness.mjs --check"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT"
+}
