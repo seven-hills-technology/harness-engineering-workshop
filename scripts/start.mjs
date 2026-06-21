@@ -64,7 +64,16 @@ if (!existsSync(join(ROOT, 'node_modules'))) {
 if (target === 'api') {
   const require = createRequire(join(ROOT, 'package.json'));
   const loads = () => {
-    try { require('better-sqlite3'); return true; } catch { return false; }
+    try {
+      // better-sqlite3 dlopens its native addon lazily on `new Database()`,
+      // not at require() time — so we must actually open a DB to detect an
+      // architecture/ABI mismatch.
+      const Database = require('better-sqlite3');
+      new Database(':memory:').close();
+      return true;
+    } catch {
+      return false;
+    }
   };
   if (!loads()) {
     console.log(`▸ Rebuilding better-sqlite3 for this Node (${process.version}, ${process.arch})…`);
@@ -73,19 +82,30 @@ if (target === 'api') {
   }
 }
 
-// 4. launch the dev server with the SAME Node (process.execPath), not a
-//    PATH-resolved one — guarantees the runtime architecture matches.
+// 4. launch with the SAME Node (process.execPath) — never a PATH-resolved one.
+//    For the API we BUILD then run the compiled dist/main.js directly, because
+//    `nest start` re-spawns the app through a shell and resolves `node` from
+//    PATH, which on mixed arm64/x86_64 machines can pick the wrong architecture
+//    (the "incompatible architecture" dlopen error). Running dist/main.js with
+//    process.execPath removes that second, ambiguous Node entirely.
 let cmd, args, cwd;
 if (target === 'api') {
+  const apiDir = join(ROOT, 'apps', 'api');
+  console.log('▸ Building API…');
+  const nestCli = join(ROOT, 'node_modules', '@nestjs', 'cli', 'bin', 'nest.js');
+  const b = spawnSync(process.execPath, [nestCli, 'build'], { cwd: apiDir, stdio: 'inherit', env: childEnv });
+  if (b.status !== 0) process.exit(b.status ?? 1);
   cmd = process.execPath;
-  args = [join(ROOT, 'node_modules', '@nestjs', 'cli', 'bin', 'nest.js'), 'start', '--watch'];
-  cwd = join(ROOT, 'apps', 'api');
+  args = [join(apiDir, 'dist', 'main.js')];
+  cwd = apiDir;
 } else {
+  // Vite's dev server runs in-process under this Node (no child app process).
   cmd = process.execPath;
   args = [join(ROOT, 'node_modules', 'vite', 'bin', 'vite.js'), 'apps/web', '--port', String(PORT), '--strictPort'];
   cwd = ROOT;
 }
 
 console.log(`▸ Starting ${NAME} on http://localhost:${PORT}  (Ctrl-C to stop)`);
+if (target === 'api') console.log('  (re-run to pick up API code changes; `npm run dev:api` gives watch mode)');
 const child = spawn(cmd, args, { cwd, stdio: 'inherit', env: childEnv });
 child.on('exit', (code) => process.exit(code ?? 0));
