@@ -16,9 +16,11 @@ workshop is the **Admin Dashboard**.
 
 ## Prerequisites
 
-- **Node ≥ 22** (the visual design loop, lavish-axi, requires it). Use one consistent Node — the
-  start scripts auto-rebuild `better-sqlite3` for your Node, so mixed arm64/x86_64 installs are
-  handled for you.
+- **Node ≥ 22** (the visual design loop, lavish-axi, requires it). The repo pins a version in
+  `.nvmrc`, so `nvm use` selects a known-good Node. On **Apple Silicon, prefer an arm64 Node**
+  (`nvm use` / `nvm use 22`) to run natively. The start scripts reconcile native binaries
+  (`better-sqlite3`, `esbuild`) for whatever Node you launch with, so a mismatched arch self-heals
+  on first run.
 - **git**, and optionally the **GitHub CLI** (`gh`) for PR reviews.
 - A coding agent: **Codex CLI** or **Claude Code**.
 

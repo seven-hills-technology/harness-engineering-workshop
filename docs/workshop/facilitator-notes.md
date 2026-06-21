@@ -12,9 +12,11 @@
   ```
   These commands are identical on **Windows, macOS, and Linux**. Shortcuts: `./start-api.sh`
   (macOS/Linux) or `start-api.cmd` (Windows), etc.
-- **Node ≥ 22.** `npm run start:api` checks the Node version and auto-rebuilds `better-sqlite3`
-  for the running Node, which fixes the most common snag (mixed arm64/x86_64 Node installs
-  breaking the native module on Apple Silicon).
+- **Node ≥ 22.** The repo pins a version in `.nvmrc` (`nvm use` selects it). On **Apple Silicon,
+  use an arm64 Node** (`nvm use`) — an x64 Node runs under Rosetta and the launcher will print a
+  nudge. `npm run start:*` probes the native binaries (`better-sqlite3`, `esbuild`) under the
+  launching Node and runs `npm install` to reconcile them if the arch doesn't match — so a mixed
+  arm64/x86_64 setup self-heals on first run instead of erroring.
 - **Windows attendees:** the app + tests run via the `npm run start:*` / `npm test` commands. The
   `e2e/*.sh` flows need **Git Bash** or **WSL** (Playwright CLI itself is cross-platform).
 - Each attendee picks their agent: **Codex** or **Claude Code**. Both are first-class.

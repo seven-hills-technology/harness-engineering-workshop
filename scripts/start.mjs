@@ -22,7 +22,6 @@
  */
 
 import { existsSync } from 'node:fs';
-import { createRequire } from 'node:module';
 import { spawn, spawnSync } from 'node:child_process';
 import { delimiter, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -53,32 +52,44 @@ if (Number.isNaN(major) || major < 22) {
 }
 console.log(`▸ Using Node ${process.version} (${process.arch}) — ${process.execPath}`);
 
-// 2. dependencies
+// On Apple Silicon, nudge toward a native arm64 Node — an x64 Node runs under
+// Rosetta and forces slower x64 native binaries. `hw.optional.arm64` reports the
+// real hardware even from a translated (x64) process. Non-blocking.
+if (process.platform === 'darwin' && process.arch === 'x64') {
+  const hw = spawnSync('sysctl', ['-n', 'hw.optional.arm64'], { encoding: 'utf8' });
+  if ((hw.stdout ?? '').trim() === '1') {
+    console.log('  note: x64 Node on Apple Silicon (Rosetta). For native speed use an arm64 Node — `nvm use` (this repo pins 22) or `nvm use 22`.');
+  }
+}
+
+// 2. dependencies present?
 if (!existsSync(join(ROOT, 'node_modules'))) {
   console.log('▸ Installing dependencies (first run, this may take a minute)…');
   const r = run(['install']);
   if (r.status !== 0) process.exit(r.status ?? 1);
 }
 
-// 3. api: make sure the better-sqlite3 native addon loads under THIS Node
-if (target === 'api') {
-  const require = createRequire(join(ROOT, 'package.json'));
-  const loads = () => {
-    try {
-      // better-sqlite3 dlopens its native addon lazily on `new Database()`,
-      // not at require() time — so we must actually open a DB to detect an
-      // architecture/ABI mismatch.
-      const Database = require('better-sqlite3');
-      new Database(':memory:').close();
-      return true;
-    } catch {
-      return false;
-    }
-  };
-  if (!loads()) {
-    console.log(`▸ Rebuilding better-sqlite3 for this Node (${process.version}, ${process.arch})…`);
-    let r = run(['rebuild', 'better-sqlite3']);
-    if (r.status !== 0) run(['rebuild', 'better-sqlite3', '--build-from-source']);
+// 3. Native deps must match THIS Node's arch/ABI. npm only installs the
+//    platform-specific binaries (better-sqlite3, esbuild's @esbuild/*) for the
+//    arch that ran `npm install`; switching Node arch breaks them. The addons
+//    load lazily, so we probe in a fresh child process and reconcile with a
+//    plain `npm install`, which fetches the right binaries for this arch.
+const nativeProbe = target === 'api'
+  ? "new (require('better-sqlite3'))(':memory:').close()"
+  : "require('esbuild').transformSync('1')";
+const nativeOk = () =>
+  spawnSync(process.execPath, ['-e', nativeProbe], { cwd: ROOT, stdio: 'ignore', env: childEnv }).status === 0;
+
+if (!nativeOk()) {
+  console.log(`▸ Reconciling native dependencies for ${process.arch} (npm install)…`);
+  run(['install']);
+  if (target === 'api' && !nativeOk()) {
+    run(['rebuild', 'better-sqlite3']);
+    if (!nativeOk()) run(['rebuild', 'better-sqlite3', '--build-from-source']);
+  }
+  if (!nativeOk()) {
+    console.error('✗ Native dependencies still won’t load. Use one consistent Node >= 22 (arm64 on Apple Silicon) and run `npm install`.');
+    process.exit(1);
   }
 }
 
