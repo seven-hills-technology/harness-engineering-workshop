@@ -3,6 +3,8 @@ node_modules/
 
 # runtime data (re-seeded from DummyJSON on boot — safe to delete)
 apps/api/db/
+# the sqlite path is CWD-relative, so a db/ may also appear at repo root
+/db/
 
 # build output
 dist/
@@ -11,6 +13,7 @@ build/
 # tool state
 .lavish-axi/
 .playwright/
+.playwright-cli/
 playwright-report/
 test-results/
 
