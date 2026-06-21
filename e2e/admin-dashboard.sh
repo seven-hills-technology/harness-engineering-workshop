@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # End-to-end flow: admin logs in -> opens the Admin Dashboard -> metrics render.
-# Prereqs: API on :7800 (seeded order history), web on :7801, chromium installed.
+# Prereqs: API on :8010 (seeded order history), web on :9010, chromium installed.
 set -euo pipefail
 
 export PLAYWRIGHT_CLI_SESSION="workshop-e2e-admin"
 PW="npx playwright-cli"
-WEB="http://localhost:7801"
+WEB="http://localhost:9010"
 
 pass() { echo "  ✓ $1"; }
 fail() { echo "  ✗ $1"; $PW close >/dev/null 2>&1 || true; exit 1; }

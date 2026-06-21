@@ -9,7 +9,7 @@ import type {
   User,
 } from './types';
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:7800';
+const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8010';
 
 const TOKEN_KEY = 'workshop.token';
 

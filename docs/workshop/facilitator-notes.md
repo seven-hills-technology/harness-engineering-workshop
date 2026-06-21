@@ -7,7 +7,7 @@
   npm install
   npm run e2e:install        # downloads chromium for Playwright CLI
   npm run dev:api            # confirm it seeds (194 products + 120 orders)
-  npm run dev:web            # confirm http://localhost:7801 loads, login works
+  npm run dev:web            # confirm http://localhost:9010 loads, login works
   npm test                   # api + web green
   ```
 - **Node ≥ 22**, single consistent architecture. On Apple Silicon, mixed arm64/x86_64 Node
@@ -44,7 +44,7 @@
   `workshop-harness/harness.config.json` `targets.codex.minVersion`; skills live in `.agents/skills`.
 - **lavish-axi won't start** → needs Node ≥ 22 and network on first `npx`; it degrades to a
   text-only design doc otherwise.
-- **Port in use** → API 7800, web 7801; free them or adjust.
+- **Port in use** → API 8010, web 9010; free them or adjust.
 
 ## The point
 

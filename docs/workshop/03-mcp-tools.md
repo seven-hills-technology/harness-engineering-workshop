@@ -24,7 +24,7 @@ The single browser layer — a repo dev-dependency, invoked with `npx playwright
 vendored as the `workshop:playwright-cli` skill (generated to both tools). The pattern:
 
 ```bash
-npx playwright-cli open http://localhost:7801
+npx playwright-cli open http://localhost:9010
 npx playwright-cli snapshot        # returns element refs like e21
 npx playwright-cli click e21       # act on a ref (or use role/text locators)
 npx playwright-cli screenshot --filename=shot.png

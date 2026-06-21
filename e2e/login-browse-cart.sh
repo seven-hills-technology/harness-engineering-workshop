@@ -3,8 +3,8 @@
 # Driven by the Playwright CLI (the workshop's single browser layer).
 #
 # Prereqs:
-#   - API running on http://localhost:7800   (npm run dev --workspace @workshop/api)
-#   - Web running on http://localhost:7801   (npm run dev --workspace @workshop/web)
+#   - API running on http://localhost:8010   (npm run dev --workspace @workshop/api)
+#   - Web running on http://localhost:9010   (npm run dev --workspace @workshop/web)
 #   - Chromium installed:  npx playwright-cli install-browser chromium
 #
 # Run:  bash e2e/login-browse-cart.sh
@@ -12,7 +12,7 @@ set -euo pipefail
 
 export PLAYWRIGHT_CLI_SESSION="workshop-e2e"
 PW="npx playwright-cli"
-WEB="http://localhost:7801"
+WEB="http://localhost:9010"
 
 pass() { echo "  ✓ $1"; }
 fail() { echo "  ✗ $1"; $PW close >/dev/null 2>&1 || true; exit 1; }

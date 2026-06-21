@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # End-to-end flow: login -> catalog -> search narrows the result set.
-# Prereqs: API on :7800, web on :7801, chromium installed (see e2e/README.md).
+# Prereqs: API on :8010, web on :9010, chromium installed (see e2e/README.md).
 set -euo pipefail
 
 export PLAYWRIGHT_CLI_SESSION="workshop-e2e-search"
 PW="npx playwright-cli"
-WEB="http://localhost:7801"
+WEB="http://localhost:9010"
 
 pass() { echo "  ✓ $1"; }
 fail() { echo "  ✗ $1"; $PW close >/dev/null 2>&1 || true; exit 1; }

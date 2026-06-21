@@ -28,8 +28,8 @@ workshop is the **Admin Dashboard**.
 npm install                 # installs all workspaces (api + web)
 
 # run the app (two terminals, or background them)
-npm run dev:api             # NestJS API on http://localhost:7800  (seeds on first boot)
-npm run dev:web             # React app on  http://localhost:7801
+npm run dev:api             # NestJS API on http://localhost:8010  (seeds on first boot)
+npm run dev:web             # React app on  http://localhost:9010
 
 # tests
 npm test                    # api (Jest) + web (Vitest)

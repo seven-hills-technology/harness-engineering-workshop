@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # End-to-end flow: login -> open product -> write a review -> see it listed.
-# Prereqs: API on :7800, web on :7801, chromium installed (see e2e/README.md).
+# Prereqs: API on :8010, web on :9010, chromium installed (see e2e/README.md).
 set -euo pipefail
 
 export PLAYWRIGHT_CLI_SESSION="workshop-e2e-review"
 PW="npx playwright-cli"
-WEB="http://localhost:7801"
+WEB="http://localhost:9010"
 COMMENT="Workshop e2e review $(date +%s)"
 
 pass() { echo "  ✓ $1"; }
