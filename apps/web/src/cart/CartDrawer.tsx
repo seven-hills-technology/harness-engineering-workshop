@@ -1,6 +1,8 @@
+import { useNavigate } from 'react-router-dom';
 import { useCart, useCartMutations } from './useCart';
 
 export default function CartDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const navigate = useNavigate();
   const { data: cart } = useCart();
   const { update, remove } = useCartMutations();
 
@@ -73,6 +75,10 @@ export default function CartDrawer({ open, onClose }: { open: boolean; onClose: 
           </div>
           <button
             disabled={items.length === 0}
+            onClick={() => {
+              onClose();
+              navigate('/checkout');
+            }}
             className="w-full rounded-lg bg-slate-900 px-4 py-2 font-medium text-white hover:bg-slate-700 disabled:opacity-50"
           >
             Checkout

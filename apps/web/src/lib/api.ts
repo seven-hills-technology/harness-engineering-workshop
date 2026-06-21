@@ -1,6 +1,7 @@
 import type {
   CartView,
   LoginResponse,
+  OrderView,
   ProductDetail,
   ProductListResponse,
   User,
@@ -100,3 +101,10 @@ export const removeCartItem = (productId: number) =>
   request<CartView>(`/cart/items/${productId}`, { method: 'DELETE' });
 
 export const clearCart = () => request<CartView>('/cart', { method: 'DELETE' });
+
+// --- orders ---
+export const createOrder = () => request<OrderView>('/orders', { method: 'POST' });
+
+export const getOrders = () => request<OrderView[]>('/orders');
+
+export const getOrder = (id: number) => request<OrderView>(`/orders/${id}`);

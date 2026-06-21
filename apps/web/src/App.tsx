@@ -6,6 +6,9 @@ import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import ProductsPage from './products/ProductsPage';
 import ProductDetailPage from './products/ProductDetailPage';
+import CheckoutPage from './checkout/CheckoutPage';
+import OrdersPage from './orders/OrdersPage';
+import OrderDetailPage from './orders/OrderDetailPage';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },
@@ -27,6 +30,9 @@ export default function App() {
             >
               <Route path="/products" element={<ProductsPage />} />
               <Route path="/products/:id" element={<ProductDetailPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/orders" element={<OrdersPage />} />
+              <Route path="/orders/:id" element={<OrderDetailPage />} />
             </Route>
           </Routes>
         </BrowserRouter>

@@ -69,3 +69,19 @@ export interface CartView {
   expiresAt: string | null;
   justExpired?: boolean;
 }
+
+export interface OrderItemView {
+  productId: number;
+  title: string;
+  quantity: number;
+  unitPrice: number;
+}
+
+export interface OrderView {
+  id: number;
+  status: 'pending' | 'paid' | 'fulfilled' | 'cancelled';
+  subtotal: number;
+  total: number;
+  createdAt: string;
+  items: OrderItemView[];
+}
