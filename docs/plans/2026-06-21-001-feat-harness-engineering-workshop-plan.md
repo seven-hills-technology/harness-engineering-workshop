@@ -355,7 +355,7 @@ feature; `workshop:review` runs the suite as the one objective gate.
 - [ ] App boots; products + **order history** seeded; login works for `admin@test.com` / `user@test.com` (pwd `password`).
 - [ ] Checkout/Orders, Reviews-write, and Search/recommendations are fully functional and tested (Jest + RTL + e2e).
 - [ ] `workshop:review` emits an advisory risk level + rationale + classified findings + structured PR body, **without** git worktrees, and fails only on red tests/coverage drop.
-- [ ] Playwright CLI drives the e2e suite via npx (no global install).
+- [x] Playwright CLI drives the e2e suite via npx (no global install). _(Phase 4 — login→browse→cart e2e green against the live stack)_
 - [ ] The Admin Dashboard reference renders all four metrics from seeded data.
 - [ ] M1–M4 docs + dual-tool README enable a clean-clone attendee to complete the workshop in either tool.
 
