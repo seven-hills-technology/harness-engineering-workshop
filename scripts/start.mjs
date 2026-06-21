@@ -5,21 +5,26 @@
  *   node scripts/start.mjs api   -> NestJS API on http://localhost:8010
  *   node scripts/start.mjs web   -> React app  on http://localhost:9010
  *
- * Usually invoked via the npm scripts `npm run start:api` / `npm run start:web`
- * (or the ./start-api.sh / start-api.cmd shortcuts). It:
+ * Usually invoked via `npm run start:api` / `npm run start:web` (or the
+ * ./start-api.sh / start-api.cmd shortcuts). It:
  *   - verifies Node >= 22
  *   - installs dependencies on first run
- *   - (api) rebuilds the better-sqlite3 native addon if it doesn't match this Node
- *     (the usual cause of "incompatible architecture" / load errors)
- *   - starts the dev server
+ *   - (api) rebuilds the better-sqlite3 native addon if it doesn't load
+ *   - starts the dev server **with the exact same Node** that is running this
+ *     script, so the better-sqlite3 native binary always matches the runtime.
  *
- * Pure Node + npm so there are no shell/OS differences to trip over.
+ * The last point is the important one: on machines with both an arm64 and an
+ * x86_64 Node installed, a child process resolved via PATH can be a different
+ * architecture than the one that built the native addon ("incompatible
+ * architecture" dlopen error). We avoid that by spawning the dev server with
+ * `process.execPath` and by prepending this Node's directory to PATH for every
+ * child (npm install / rebuild and the grandchild app process).
  */
 
 import { existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { spawn, spawnSync } from 'node:child_process';
-import { dirname, join } from 'node:path';
+import { delimiter, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const target = process.argv[2];
@@ -34,7 +39,11 @@ const npm = isWin ? 'npm.cmd' : 'npm';
 const PORT = target === 'api' ? 8010 : 9010;
 const NAME = target === 'api' ? 'NestJS API' : 'React web app';
 
-const run = (args) => spawnSync(npm, args, { cwd: ROOT, stdio: 'inherit', shell: isWin });
+// Pin every child process to THIS Node (its directory wins on PATH), so the
+// app and any rebuild use the same architecture as this launcher.
+const nodeDir = dirname(process.execPath);
+const childEnv = { ...process.env, PATH: nodeDir + delimiter + (process.env.PATH ?? '') };
+const run = (args) => spawnSync(npm, args, { cwd: ROOT, stdio: 'inherit', shell: isWin, env: childEnv });
 
 // 1. Node >= 22
 const major = Number(process.versions.node.split('.')[0]);
@@ -42,6 +51,7 @@ if (Number.isNaN(major) || major < 22) {
   console.error(`✗ Node >= 22 required (found ${process.version}). Please install/switch Node and retry.`);
   process.exit(1);
 }
+console.log(`▸ Using Node ${process.version} (${process.arch}) — ${process.execPath}`);
 
 // 2. dependencies
 if (!existsSync(join(ROOT, 'node_modules'))) {
@@ -50,23 +60,32 @@ if (!existsSync(join(ROOT, 'node_modules'))) {
   if (r.status !== 0) process.exit(r.status ?? 1);
 }
 
-// 3. api: make sure the better-sqlite3 native addon matches this Node
+// 3. api: make sure the better-sqlite3 native addon loads under THIS Node
 if (target === 'api') {
   const require = createRequire(join(ROOT, 'package.json'));
-  let loads = true;
-  try { require('better-sqlite3'); } catch { loads = false; }
-  if (!loads) {
+  const loads = () => {
+    try { require('better-sqlite3'); return true; } catch { return false; }
+  };
+  if (!loads()) {
     console.log(`▸ Rebuilding better-sqlite3 for this Node (${process.version}, ${process.arch})…`);
     let r = run(['rebuild', 'better-sqlite3']);
     if (r.status !== 0) run(['rebuild', 'better-sqlite3', '--build-from-source']);
   }
 }
 
-// 4. launch the dev server
+// 4. launch the dev server with the SAME Node (process.execPath), not a
+//    PATH-resolved one — guarantees the runtime architecture matches.
+let cmd, args, cwd;
+if (target === 'api') {
+  cmd = process.execPath;
+  args = [join(ROOT, 'node_modules', '@nestjs', 'cli', 'bin', 'nest.js'), 'start', '--watch'];
+  cwd = join(ROOT, 'apps', 'api');
+} else {
+  cmd = process.execPath;
+  args = [join(ROOT, 'node_modules', 'vite', 'bin', 'vite.js'), 'apps/web', '--port', String(PORT), '--strictPort'];
+  cwd = ROOT;
+}
+
 console.log(`▸ Starting ${NAME} on http://localhost:${PORT}  (Ctrl-C to stop)`);
-const child = spawn(npm, ['run', 'dev', '--workspace', `@workshop/${target}`], {
-  cwd: ROOT,
-  stdio: 'inherit',
-  shell: isWin,
-});
+const child = spawn(cmd, args, { cwd, stdio: 'inherit', env: childEnv });
 child.on('exit', (code) => process.exit(code ?? 0));
