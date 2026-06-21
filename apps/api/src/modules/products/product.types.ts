@@ -17,12 +17,24 @@ export type ProductListResponse = {
   limit: number;
 };
 
+export type ProductSort =
+  | 'price_asc'
+  | 'price_desc'
+  | 'rating_desc'
+  | 'title_asc';
+
 export type ProductListQuery = {
   category?: string;
   search?: string;
   skip?: number;
   limit?: number;
   lowStock?: boolean | string;
+  minPrice?: number;
+  maxPrice?: number;
+  minRating?: number;
+  brand?: string;
+  tag?: string;
+  sort?: ProductSort;
 };
 
 export type InventoryUpdateInput = {

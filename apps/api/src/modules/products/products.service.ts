@@ -55,7 +55,51 @@ export class ProductsService {
       qb.andWhere('product.stock <= product.lowStockThreshold');
     }
 
-    qb.orderBy('product.id', 'ASC').skip(skip).take(limit);
+    if (query.minPrice !== undefined) {
+      qb.andWhere('product.price >= :minPrice', { minPrice: query.minPrice });
+    }
+
+    if (query.maxPrice !== undefined) {
+      qb.andWhere('product.price <= :maxPrice', { maxPrice: query.maxPrice });
+    }
+
+    if (query.minRating !== undefined) {
+      qb.andWhere('product.rating >= :minRating', {
+        minRating: query.minRating,
+      });
+    }
+
+    if (query.brand) {
+      qb.andWhere('product.brand = :brand', { brand: query.brand });
+    }
+
+    if (query.tag) {
+      // tags is a simple-json column stored as a serialized JSON array string,
+      // e.g. ["foo","bar"]. Match the quoted tag token inside that string.
+      qb.andWhere('product.tags LIKE :tag', {
+        tag: `%"${query.tag}"%`,
+      });
+    }
+
+    switch (query.sort) {
+      case 'price_asc':
+        qb.orderBy('product.price', 'ASC');
+        break;
+      case 'price_desc':
+        qb.orderBy('product.price', 'DESC');
+        break;
+      case 'rating_desc':
+        qb.orderBy('product.rating', 'DESC');
+        break;
+      case 'title_asc':
+        qb.orderBy('product.title', 'ASC');
+        break;
+      default:
+        qb.orderBy('product.id', 'ASC');
+        break;
+    }
+
+    qb.skip(skip).take(limit);
 
     const [products, total] = await qb.getManyAndCount();
 
@@ -151,6 +195,38 @@ export class ProductsService {
       .getRawMany<{ category: string }>();
 
     return results.map((r) => r.category);
+  }
+
+  async getBrands(): Promise<string[]> {
+    const results = await this.productRepo
+      .createQueryBuilder('product')
+      .select('DISTINCT product.brand', 'brand')
+      .where("product.brand IS NOT NULL AND product.brand <> ''")
+      .orderBy('product.brand', 'ASC')
+      .getRawMany<{ brand: string }>();
+
+    return results.map((r) => r.brand);
+  }
+
+  async findRelated(id: number): Promise<ProductListItem[]> {
+    const base = await this.productRepo.findOne({ where: { id } });
+    if (!base) {
+      throw new NotFoundException(`Product #${id} not found`);
+    }
+
+    const products = await this.productRepo
+      .createQueryBuilder('product')
+      .where('product.category = :category', { category: base.category })
+      .andWhere('product.id <> :id', { id })
+      .orderBy('product.rating', 'DESC')
+      .take(8)
+      .getMany();
+
+    const reserved = await this.cartsService.getReservedQuantities(
+      products.map((p) => p.id),
+    );
+
+    return products.map((product) => this.withAvailability(product, reserved));
   }
 
   async updateInventory(

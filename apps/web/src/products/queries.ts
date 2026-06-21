@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as api from '../lib/api';
-import type { ProductDetail, ProductListResponse } from '../lib/types';
+import type { Product, ProductDetail, ProductListResponse } from '../lib/types';
 
 export function useProducts(query: api.ProductQuery) {
   return useQuery<ProductListResponse>({
@@ -11,6 +11,18 @@ export function useProducts(query: api.ProductQuery) {
 
 export function useCategories() {
   return useQuery<string[]>({ queryKey: ['categories'], queryFn: api.getCategories });
+}
+
+export function useBrands() {
+  return useQuery<string[]>({ queryKey: ['brands'], queryFn: api.getBrands });
+}
+
+export function useRelated(productId: number) {
+  return useQuery<Product[]>({
+    queryKey: ['related', productId],
+    queryFn: () => api.getRelated(productId),
+    enabled: Number.isFinite(productId),
+  });
 }
 
 export function useProduct(id: number) {

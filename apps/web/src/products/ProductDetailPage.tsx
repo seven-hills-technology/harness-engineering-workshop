@@ -1,12 +1,14 @@
 import { useParams, Link } from 'react-router-dom';
-import { useProduct } from './queries';
+import { useProduct, useRelated } from './queries';
 import { useCartMutations } from '../cart/useCart';
 import ReviewForm from './ReviewForm';
+import ProductCard from './ProductCard';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
   const productId = Number(id);
   const { data: product, isLoading, isError } = useProduct(productId);
+  const { data: related } = useRelated(productId);
   const { add } = useCartMutations();
 
   if (isLoading) return <p className="text-slate-500">Loading…</p>;
@@ -70,6 +72,17 @@ export default function ProductDetailPage() {
 
         <ReviewForm productId={product.id} />
       </section>
+
+      {related && related.length > 0 && (
+        <section className="mt-10">
+          <h2 className="text-lg font-semibold text-slate-900">Related products</h2>
+          <ul className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {related.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </ul>
+        </section>
+      )}
     </div>
   );
 }
