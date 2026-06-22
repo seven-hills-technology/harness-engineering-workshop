@@ -1,0 +1,73 @@
+<!-- mockup-v5 -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Product List Pagination — Option B (Numbered pages)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { background:#f8fafc; color:#0f172a; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .control { border:1px solid #cbd5e1; border-radius:.5rem; padding:.5rem .75rem; background:#fff; }
+</style>
+<body data-mockup-version="2" class="mx-auto max-w-6xl px-6 py-8">
+
+  <header class="mb-2">
+    <h1 class="text-2xl font-semibold tracking-tight">Product catalog</h1>
+    <p class="mt-1 text-sm text-slate-500">
+      Option B — numbered pages with Prev / Next. Page size 24. Annotate anything you'd like changed.
+    </p>
+  </header>
+
+  <!-- Filter bar (matches current ProductsPage) -->
+  <div class="mb-4 flex flex-wrap items-center gap-3">
+    <input type="search" placeholder="Search products…" class="control w-64" />
+    <select class="control"><option>All categories</option></select>
+    <select class="control"><option>All brands</option></select>
+    <select class="control"><option>Relevance</option></select>
+    <input class="control w-24" placeholder="Min $" />
+    <input class="control w-24" placeholder="Max $" />
+    <select class="control"><option>Any rating</option></select>
+  </div>
+
+  <!-- Result count summary -->
+  <div class="mb-4">
+    <span class="text-sm text-slate-500">Showing <b class="text-slate-700">25–48</b> of <b class="text-slate-700">142</b> products</span>
+  </div>
+
+  <!-- Product grid (6 of 24 shown for the mockup) -->
+  <ul class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4" id="grid"></ul>
+
+  <!-- ============ Numbered pager ============ -->
+  <div class="mt-8 flex items-center justify-between gap-4">
+    <nav class="flex items-center gap-1.5" aria-label="Product pages">
+      <button class="control font-medium hover:bg-slate-50">← Prev</button>
+      <button class="control hover:bg-slate-50">1</button>
+      <button class="rounded-lg bg-slate-900 px-3.5 py-2 font-medium text-white" aria-current="page">2</button>
+      <button class="control hover:bg-slate-50">3</button>
+      <button class="control hover:bg-slate-50">4</button>
+      <span class="px-2 text-slate-400">…</span>
+      <button class="control hover:bg-slate-50">6</button>
+      <button class="control font-medium hover:bg-slate-50">Next →</button>
+    </nav>
+    <span class="text-sm text-slate-400">Page 2 of 6</span>
+  </div>
+
+<script>
+  const sample = [
+    ['Helios Smart Bulb (4-pack)','Home','$28.00','In Stock'],
+    ['Orbit Wireless Mouse','Accessories','$45.00','In Stock'],
+    ['Tempo Bluetooth Speaker','Audio','$74.00','Low Stock'],
+    ['Atlas Standing Desk Mat','Office','$39.00','In Stock'],
+    ['Lumen E-Reader','Devices','$119.00','In Stock'],
+    ['Quill Note Tablet','Devices','$199.00','Out of Stock'],
+  ];
+  document.getElementById('grid').innerHTML = sample.map(([t,c,p,s]) => `
+    <li class="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+      <div class="mb-3 aspect-square rounded-lg bg-gradient-to-br from-slate-100 to-slate-200"></div>
+      <p class="text-xs uppercase tracking-wide text-slate-400">${c}</p>
+      <h3 class="mt-0.5 line-clamp-2 font-medium leading-snug">${t}</h3>
+      <div class="mt-2">
+        <span class="font-semibold">${p}</span>
+      </div>
+      <span class="mt-2 inline-block text-xs ${s==='In Stock'?'text-emerald-600':s==='Low Stock'?'text-amber-600':'text-red-600'}">${s}</span>
+    </li>`).join('');
+</script>
+</body>
