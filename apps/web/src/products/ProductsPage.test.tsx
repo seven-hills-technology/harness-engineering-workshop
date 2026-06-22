@@ -19,6 +19,17 @@ const sample = {
   limit: 24,
 } as unknown as ProductListResponse;
 
+// A multi-page result set (142 / 24 = 6 pages) for pagination assertions.
+const paginated = {
+  products: [
+    { id: 1, title: 'Test Mascara', price: 9.99, thumbnail: 't.jpg', availabilityStatus: 'In Stock' },
+    { id: 2, title: 'Test Lipstick', price: 12.5, thumbnail: 't.jpg', availabilityStatus: 'Low Stock' },
+  ],
+  total: 142,
+  skip: 0,
+  limit: 24,
+} as unknown as ProductListResponse;
+
 function renderPage() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
@@ -85,5 +96,66 @@ describe('ProductsPage', () => {
         ([query]) => query?.brand === 'Essence',
       ),
     ).toBe(true);
+  });
+
+  describe('pagination', () => {
+    beforeEach(() => {
+      vi.mocked(api.getProducts).mockResolvedValue(paginated);
+    });
+
+    it('renders the result-count summary and a 6-page pager', async () => {
+      renderPage();
+
+      expect(await screen.findByText(/Showing/)).toHaveTextContent(
+        'Showing 1–24 of 142 products',
+      );
+      expect(screen.getByTestId('pagination-page-6')).toBeInTheDocument();
+      expect(screen.queryByTestId('pagination-page-7')).not.toBeInTheDocument();
+    });
+
+    it('requests skip 24 when page 2 is clicked', async () => {
+      const user = userEvent.setup();
+      renderPage();
+
+      await user.click(await screen.findByTestId('pagination-page-2'));
+
+      expect(
+        vi.mocked(api.getProducts).mock.calls.some(([query]) => query?.skip === 24),
+      ).toBe(true);
+    });
+
+    it('requests skip 24 when Next is clicked', async () => {
+      const user = userEvent.setup();
+      renderPage();
+
+      await user.click(await screen.findByTestId('pagination-next'));
+
+      expect(
+        vi.mocked(api.getProducts).mock.calls.some(([query]) => query?.skip === 24),
+      ).toBe(true);
+    });
+
+    it('resets to skip 0 when a filter changes while on a later page', async () => {
+      const user = userEvent.setup();
+      renderPage();
+
+      // Advance to page 2 (skip 24).
+      await user.click(await screen.findByTestId('pagination-page-2'));
+      expect(
+        vi.mocked(api.getProducts).mock.calls.some(([query]) => query?.skip === 24),
+      ).toBe(true);
+
+      vi.mocked(api.getProducts).mockClear();
+
+      // Typing in search must reset pagination to the first page: the settled
+      // query for the new search runs with skip 0, not the stale page-2 offset.
+      await user.type(screen.getByTestId('search-input'), 'lip');
+
+      const calls = vi.mocked(api.getProducts).mock.calls;
+      expect(calls.length).toBeGreaterThan(0);
+      const [lastQuery] = calls[calls.length - 1];
+      expect(lastQuery?.search).toBe('lip');
+      expect(lastQuery?.skip).toBe(0);
+    });
   });
 });

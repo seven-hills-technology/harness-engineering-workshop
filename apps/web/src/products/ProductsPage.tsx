@@ -1,7 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ProductSort } from '../lib/api';
 import { useProducts, useCategories, useBrands } from './queries';
 import ProductCard from './ProductCard';
+import Pagination from '../components/Pagination';
+
+const PAGE_SIZE = 24;
 
 export default function ProductsPage() {
   const [search, setSearch] = useState('');
@@ -11,6 +14,13 @@ export default function ProductsPage() {
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [minRating, setMinRating] = useState('');
+  const [skip, setSkip] = useState(0);
+
+  // Any filter change resets to the first page so a narrower result set never
+  // leaves the user on an out-of-range page.
+  useEffect(() => {
+    setSkip(0);
+  }, [search, category, brand, sort, minPrice, maxPrice, minRating]);
 
   const { data, isLoading, isError } = useProducts({
     search,
@@ -20,7 +30,8 @@ export default function ProductsPage() {
     minPrice: minPrice === '' ? undefined : Number(minPrice),
     maxPrice: maxPrice === '' ? undefined : Number(maxPrice),
     minRating: minRating === '' ? undefined : Number(minRating),
-    limit: 24,
+    skip,
+    limit: PAGE_SIZE,
   });
   const { data: categories } = useCategories();
   const { data: brands } = useBrands();
@@ -120,6 +131,14 @@ export default function ProductsPage() {
       {isLoading && <p className="text-slate-500">Loading products…</p>}
       {isError && <p className="text-red-600">Failed to load products.</p>}
 
+      {data && data.total > 0 && (
+        <div className="mb-4">
+          <span className="text-sm text-slate-500">
+            Showing {skip + 1}–{Math.min(skip + PAGE_SIZE, data.total)} of {data.total} products
+          </span>
+        </div>
+      )}
+
       <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
         {data?.products.map((p) => (
           <ProductCard key={p.id} product={p} showAvailability />
@@ -128,6 +147,10 @@ export default function ProductsPage() {
 
       {data && data.products.length === 0 && (
         <p className="text-slate-500">No products match your search.</p>
+      )}
+
+      {data && data.total > 0 && (
+        <Pagination total={data.total} skip={skip} limit={PAGE_SIZE} onPageChange={setSkip} />
       )}
     </div>
   );
