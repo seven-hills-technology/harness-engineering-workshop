@@ -1,18 +1,21 @@
-type PaginationProps = {
+interface PaginationProps {
   total: number;
   skip: number;
   limit: number;
   onPageChange: (skip: number) => void;
-};
+}
 
 const controlClass = 'rounded-lg border border-slate-300 px-3 py-2';
 
+const ELLIPSIS = '…' as const;
+type PageItem = number | typeof ELLIPSIS;
+
 /**
  * Build the windowed list of page numbers to display, inserting an ellipsis
- * marker (`'…'`) where pages are collapsed. Always shows the first page, the
- * last page, and the current page plus its immediate neighbors.
+ * marker where pages are collapsed. Always shows the first page, the last page,
+ * and the current page plus its immediate neighbors.
  */
-function buildPageItems(currentPage: number, pageCount: number): Array<number | '…'> {
+function buildPageItems(currentPage: number, pageCount: number): PageItem[] {
   const pages = new Set<number>();
   pages.add(1);
   pages.add(pageCount);
@@ -21,10 +24,10 @@ function buildPageItems(currentPage: number, pageCount: number): Array<number | 
   }
 
   const sorted = [...pages].sort((a, b) => a - b);
-  const items: Array<number | '…'> = [];
+  const items: PageItem[] = [];
   let prev = 0;
   for (const page of sorted) {
-    if (prev && page - prev > 1) items.push('…');
+    if (prev && page - prev > 1) items.push(ELLIPSIS);
     items.push(page);
     prev = page;
   }
@@ -54,9 +57,9 @@ export default function Pagination({ total, skip, limit, onPageChange }: Paginat
           ← Prev
         </button>
         {items.map((item, index) =>
-          item === '…' ? (
+          item === ELLIPSIS ? (
             <span key={`ellipsis-${index}`} className="px-2 text-slate-400" aria-hidden="true">
-              …
+              {ELLIPSIS}
             </span>
           ) : item === currentPage ? (
             <button
@@ -64,7 +67,7 @@ export default function Pagination({ total, skip, limit, onPageChange }: Paginat
               key={item}
               className="rounded-lg bg-slate-900 px-3.5 py-2 font-medium text-white"
               aria-current="page"
-              aria-disabled="true"
+              disabled
               data-testid={`pagination-page-${item}`}
             >
               {item}

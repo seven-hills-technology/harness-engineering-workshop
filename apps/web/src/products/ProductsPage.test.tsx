@@ -135,7 +135,7 @@ describe('ProductsPage', () => {
       ).toBe(true);
     });
 
-    it('resets to skip 0 when a filter changes while on a later page', async () => {
+    it('resets to skip 0 when the search changes — never fetches the stale offset', async () => {
       const user = userEvent.setup();
       renderPage();
 
@@ -147,15 +147,75 @@ describe('ProductsPage', () => {
 
       vi.mocked(api.getProducts).mockClear();
 
-      // Typing in search must reset pagination to the first page: the settled
-      // query for the new search runs with skip 0, not the stale page-2 offset.
+      // Changing the search must reset pagination synchronously: the negative
+      // invariant is that NO request carrying the new search uses a stale
+      // (non-zero) skip — not merely that the last call happens to be skip 0.
       await user.type(screen.getByTestId('search-input'), 'lip');
 
       const calls = vi.mocked(api.getProducts).mock.calls;
       expect(calls.length).toBeGreaterThan(0);
+      const staleOffsetUsed = calls
+        .filter(([query]) => query?.search !== '')
+        .some(([query]) => query?.skip !== 0);
+      expect(staleOffsetUsed).toBe(false);
+
       const [lastQuery] = calls[calls.length - 1];
       expect(lastQuery?.search).toBe('lip');
       expect(lastQuery?.skip).toBe(0);
     });
+
+    it('resets to skip 0 when a non-search filter (category) changes', async () => {
+      const user = userEvent.setup();
+      renderPage();
+
+      await user.click(await screen.findByTestId('pagination-page-2'));
+      expect(
+        vi.mocked(api.getProducts).mock.calls.some(([query]) => query?.skip === 24),
+      ).toBe(true);
+
+      vi.mocked(api.getProducts).mockClear();
+
+      await screen.findByRole('option', { name: 'beauty' });
+      await user.selectOptions(screen.getByTestId('category-select'), 'beauty');
+
+      const calls = vi.mocked(api.getProducts).mock.calls;
+      const staleOffsetUsed = calls
+        .filter(([query]) => query?.category === 'beauty')
+        .some(([query]) => query?.skip !== 0);
+      expect(staleOffsetUsed).toBe(false);
+    });
+
+    it('shows the clamped partial-last-page summary on the final page', async () => {
+      const user = userEvent.setup();
+      renderPage();
+
+      await user.click(await screen.findByTestId('pagination-page-6'));
+
+      // Page 6 of 142 -> items 121–142 (upper bound clamped to total, not 144).
+      expect(await screen.findByText(/Showing/)).toHaveTextContent(
+        'Showing 121–142 of 142 products',
+      );
+    });
+
+    it('hides the summary and pager and shows the empty message when there are no results', async () => {
+      vi.mocked(api.getProducts).mockResolvedValue({
+        products: [],
+        total: 0,
+        skip: 0,
+        limit: 24,
+      } as unknown as ProductListResponse);
+      renderPage();
+
+      expect(await screen.findByText('No products match your search.')).toBeInTheDocument();
+      expect(screen.queryByText(/Showing/)).not.toBeInTheDocument();
+      expect(screen.queryByTestId('pagination')).not.toBeInTheDocument();
+    });
+  });
+
+  it('does not render the pager when the results fit on one page', async () => {
+    // The default `sample` fixture has total 2 (< one page).
+    renderPage();
+    expect(await screen.findByText('Test Mascara')).toBeInTheDocument();
+    expect(screen.queryByTestId('pagination')).not.toBeInTheDocument();
   });
 });

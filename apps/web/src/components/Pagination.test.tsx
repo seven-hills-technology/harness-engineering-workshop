@@ -62,6 +62,32 @@ describe('Pagination', () => {
     expect(onPageChange).toHaveBeenCalledWith(24);
   });
 
+  it('renders the active page as a disabled, non-interactive control', async () => {
+    const user = userEvent.setup();
+    const onPageChange = vi.fn();
+    render(<Pagination total={142} skip={0} limit={24} onPageChange={onPageChange} />);
+
+    const active = screen.getByTestId('pagination-page-1');
+    expect(active).toBeDisabled();
+    await user.click(active);
+    expect(onPageChange).not.toHaveBeenCalled();
+  });
+
+  it('does not render a phantom page for exact multiples of the page size', () => {
+    // 240 / 24 = exactly 10 pages — there must be no 11th page.
+    render(<Pagination total={240} skip={0} limit={24} onPageChange={vi.fn()} />);
+
+    expect(screen.getByTestId('pagination-page-10')).toBeInTheDocument();
+    expect(screen.queryByTestId('pagination-page-11')).not.toBeInTheDocument();
+  });
+
+  it('renders an ellipsis on both sides when the current page is in the middle', () => {
+    // skip 96 → page 5 of 10: pages 4,5,6 visible, 1 and 10 anchored, gaps both sides.
+    render(<Pagination total={240} skip={96} limit={24} onPageChange={vi.fn()} />);
+
+    expect(screen.getAllByText('…')).toHaveLength(2);
+  });
+
   it('renders nothing when there is one page or fewer', () => {
     const { container } = render(
       <Pagination total={20} skip={0} limit={24} onPageChange={vi.fn()} />,

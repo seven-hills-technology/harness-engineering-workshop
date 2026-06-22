@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import * as api from '../lib/api';
 import type { Product, ProductDetail, ProductListResponse } from '../lib/types';
 
@@ -6,6 +11,10 @@ export function useProducts(query: api.ProductQuery) {
   return useQuery<ProductListResponse>({
     queryKey: ['products', query],
     queryFn: () => api.getProducts(query),
+    // Keep the current page's rows (and the pager) on screen while the next
+    // page loads, instead of unmounting the grid to a loading state on every
+    // page change.
+    placeholderData: keepPreviousData,
   });
 }
 

@@ -9,7 +9,6 @@ WEB="http://localhost:9010"
 
 pass() { echo "  ✓ $1"; }
 fail() { echo "  ✗ $1"; $PW close >/dev/null 2>&1 || true; exit 1; }
-first_product() { grep -m1 -oE "^[[:space:]]*-?[[:space:]]*[A-Za-z].*" <<<"$1" || true; }
 
 echo "▸ e2e: login -> pager advances to page 2"
 
