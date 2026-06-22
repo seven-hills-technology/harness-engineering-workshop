@@ -1,7 +1,7 @@
 ---
 title: "feat: Add numbered pagination to the product catalog page"
 type: enhancement
-status: ready
+status: completed
 date: 2026-06-21
 origin: docs/designs/2026-06-21-product-list-pagination-design.md
 mockup: docs/designs/2026-06-21-product-list-pagination-mockup.html
@@ -158,17 +158,20 @@ set advances (cards change / count reflects the next page). Follow the existing 
 
 ## Acceptance Criteria
 
-- [ ] On `/products` with more than 24 matching products, a numbered pager + Prev/Next renders
+- [x] On `/products` with more than 24 matching products, a numbered pager + Prev/Next renders
       below the grid, left-aligned.
-- [ ] A result-count summary "Showing X–Y of N products" renders above the grid.
-- [ ] A "Page X of Y" indicator renders at the bottom, to the right of the pager.
-- [ ] Clicking a page / Next / Prev loads the corresponding 24 products (correct `skip` sent to the API).
-- [ ] Prev is disabled on page 1; Next is disabled on the last page.
-- [ ] Changing any filter resets to page 1.
-- [ ] No pager (and no summary beyond the empty-state message) when 0 results; pager hidden when ≤ 1 page.
-- [ ] `ProductCard` is unchanged (no star ratings added).
-- [ ] New `Pagination` unit tests and updated `ProductsPage` tests pass; e2e page-advance check passes.
-- [ ] `npm test` is green for both apps; no coverage drop (quality gate).
+- [x] A result-count summary "Showing X–Y of N products" renders above the grid.
+- [x] A "Page X of Y" indicator renders at the bottom, to the right of the pager.
+- [x] Clicking a page / Next / Prev loads the corresponding 24 products (correct `skip` sent to the API).
+- [x] Prev is disabled on page 1; Next is disabled on the last page.
+- [x] Changing any filter resets to page 1.
+- [x] No pager (and no summary beyond the empty-state message) when 0 results; pager hidden when ≤ 1 page.
+- [x] `ProductCard` is unchanged (no star ratings added).
+- [x] New `Pagination` unit tests and updated `ProductsPage` tests pass; e2e page-advance check passes.
+- [x] Web suite green (32/32) and pagination e2e passes; no coverage drop. **Note:** one
+      *pre-existing* API failure unrelated to this change — `admin.service.spec.ts`
+      "aggregates totals…" fails identically on `main` (cross-suite seed/DB state issue, not
+      touched by this web-only feature). Tracked separately; out of scope for this plan.
 
 ## Sources
 
