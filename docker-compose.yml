@@ -1,0 +1,62 @@
+# Docker fallback for running the workshop app (api + web).
+#
+#   docker compose up            # install deps (first time) + start both, live-reload
+#   docker compose up --build    # rebuild the image after changing the Dockerfile
+#   docker compose down          # stop
+#   docker compose down -v       # stop and wipe the deps + db volumes (full reset)
+#
+# Why this exists: dependencies (incl. the native better-sqlite3 / esbuild addons)
+# are installed INSIDE the Linux container by the one-shot `install` service, into
+# a named `deps` volume that the app source bind mount never touches. So a broken
+# or mismatched host toolchain — the Windows pain the plain `npm run start` works
+# around — never blocks you here. Source is bind-mounted for live edits; the
+# sqlite db lives in a container-managed volume so the host fs is never in the path.
+
+services:
+  # Runs once per `up`, populates the shared node_modules volume for the OS/arch of
+  # the container, then exits. api/web wait for it to finish before starting. This
+  # is deliberate: relying on Docker to auto-populate an anonymous node_modules
+  # volume from the image is unreliable under `compose up`, so we install explicitly.
+  install:
+    build: .
+    image: workshop-app
+    command: npm install
+    volumes:
+      - .:/app
+      - deps:/app/node_modules
+
+  api:
+    image: workshop-app
+    command: npm run dev --workspace @workshop/api
+    ports:
+      - "8010:8010"
+    volumes:
+      - .:/app                  # live edits from the host
+      - deps:/app/node_modules  # Linux-built deps, shadowing anything on the host
+      - api-db:/app/apps/api/db # disposable sqlite, re-seeded on boot
+    environment:
+      # Poll the filesystem so the TS watcher fires on Windows bind mounts,
+      # where inotify events don't cross the host boundary.
+      - TSC_WATCHFILE=DynamicPriorityPolling
+      - TSC_WATCHDIRECTORY=DynamicPriorityPolling
+    depends_on:
+      install:
+        condition: service_completed_successfully
+
+  web:
+    image: workshop-app
+    command: npm run dev --workspace @workshop/web -- --host 0.0.0.0 --port 9010 --strictPort
+    ports:
+      - "9010:9010"
+    volumes:
+      - .:/app
+      - deps:/app/node_modules
+    environment:
+      - VITE_USE_POLLING=true   # same reason as the API watcher above
+    depends_on:
+      install:
+        condition: service_completed_successfully
+
+volumes:
+  deps:
+  api-db:

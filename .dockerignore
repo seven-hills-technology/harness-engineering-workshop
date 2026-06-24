@@ -1,0 +1,20 @@
+# Keep the build context (and any standalone `COPY . .`) free of host-built
+# artifacts — node_modules especially, which is Linux-built inside the image.
+node_modules
+**/node_modules
+
+# Disposable / generated data — re-seeded or rebuilt in the container.
+apps/api/db
+/db
+dist
+build
+
+# Tooling state and noise.
+.git
+.lavish-axi
+.playwright
+.playwright-cli
+playwright-report
+test-results
+*.log
+.DS_Store

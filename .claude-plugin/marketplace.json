@@ -1,0 +1,19 @@
+{
+  "name": "workshop-marketplace",
+  "owner": {
+    "name": "Seven Hills Technology",
+    "url": "https://github.com/seven-hills-technology"
+  },
+  "metadata": {
+    "description": "Local marketplace for the Harness Engineering Workshop plugin.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "workshop",
+      "description": "Workshop harness — agnostic AI coding tooling (plan/work/review/storm/setup), generated for Claude Code and Codex.",
+      "version": "0.1.0",
+      "source": "./plugins/workshop"
+    }
+  ]
+}
